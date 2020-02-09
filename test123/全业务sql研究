@@ -1,0 +1,56 @@
+-- 探究uid用户量级
+SELECT is_yike_user,identity,COUNT(1)
+FROM dataware.dim_user
+WHERE dt = {@date}
+GROUP BY is_yike_user,identity
+
+
+-- 查看商城累计成交金额
+SELECT sum(pay_money/100)
+FROM default.mall_order_pay
+WHERE
+  dt = '{@date}'
+  AND pay_finish_time IS NOT NULL
+  AND pay_money IS NOT NULL
+  AND status=101010
+
+-- 查看商城19年累计成交金额
+SELECT sum(pay_money/100)
+FROM default.mall_order_pay
+WHERE
+  dt = '{@date}'
+  AND pay_finish_time IS NOT NULL
+  AND pay_money IS NOT NULL
+  AND status=101010
+  AND pay_finish_time >= 20190101
+  AND pay_finish_time < 20200101
+
+-- 查看答疑累计成交金额(近似准确)
+SELECT sum(pay_amount) AS payment
+      FROM default.homework_dayi_tblpackage
+      WHERE dt='{@date}'
+        AND status>=1
+
+-- 查看答疑19年累计成交金额(近似准确)
+SELECT sum(pay_amount) AS payment
+      FROM default.homework_dayi_tblpackage
+      WHERE dt='{@date}'
+        AND status>=1
+        AND from_unixtime(create_time, 'yyyyMMdd') >= 20190101
+        AND from_unixtime(create_time, 'yyyyMMdd') < 20200101
+
+-- 查看班课的累计收入
+SELECT sum(payment)
+	FROM dataware.dwd_trade
+	WHERE dt = {@date}
+	AND	status = 1
+	And course_type = 2
+
+-- 查看班课的19年的累计收入
+SELECT sum(payment)
+	FROM dataware.dwd_trade
+	WHERE dt = {@date}
+	AND	status = 1
+	And course_type = 2
+	AND from_unixtime(trade_time, 'yyyyMMdd') >= 20190101
+    AND from_unixtime(trade_time, 'yyyyMMdd') < 20200101
